@@ -50,38 +50,51 @@ async def exec_graphviz_async(
 ):
     """
     This asynchronous function executes the Graphviz command on the given DOT
-    source file. Once complete, it returns None. It may raise an OSError or a
-    GraphvizError if it encounters problems while rendering and saving.
+    source file. Once complete, it returns None. If it encounters problems
+    while rendering and saving, it may raise an OSError, a
+    GraphvizNotFoundError, or a GraphvizOutputError.
     """
-    # Create an OS process running Graphviz. The create_subprocess_exec
-    # function escapes command-argument strings and prevents shell-injection
-    # attacks.
-    proc = await asyncio.create_subprocess_exec(
-        # The dot command from Graphviz must be installed into the shell path.
-        dot_command,
-        # The new image’s file path.
-        '-o', output_file_path,
-        # The new image is rendered as a PNG.
-        '-T', 'png',
-        # The new image’s DPI is at 200 to prevent ugly pixelation.
-        '-Gdpi=300',
-        # The new image is to have a bigger padding than the default (which is
-        # 0.555, or 4 typographic points).
-        '-Gpad=1',
-        # The input DOT source file’s path.
-        dot_source_file_path,
-        # Pipe the process’s stderr text into a StreamWriter.
-        stderr=asyncio.subprocess.PIPE,
-    )
-    # Waits for the process to finish and gets the resulting stderr
-    # StreamWriter.
-    _, stderr = await proc.communicate()
-    # Graphviz returns an exit code of 0 if it is successful; it returns a
-    # non-zero exit code if it is not successful.
-    if proc.returncode:
-        # When Graphviz returns an error exit code, then the image saving was
-        # unsuccessful.
-        raise GraphvizError(stderr.decode())
+    try:
+        # Create an OS process running Graphviz. The create_subprocess_exec
+        # function escapes command-argument strings and prevents shell-injection
+        # attacks.
+        proc = await asyncio.create_subprocess_exec(
+            # The dot command from Graphviz must be installed into the shell
+            # path.
+            dot_command,
+            # The new image’s file path.
+            '-o', output_file_path,
+            # The new image is rendered as a PNG.
+            '-T', 'png',
+            # The new image’s DPI is at 200 to prevent ugly pixelation.
+            '-Gdpi=300',
+            # The new image is to have a bigger padding than the default (which
+            # is 0.555, or 4 typographic points).
+            '-Gpad=1',
+            # The input DOT source file’s path.
+            dot_source_file_path,
+            # Pipe the process’s stderr text into a StreamWriter.
+            stderr=asyncio.subprocess.PIPE,
+        )
+        # Waits for the process to finish and gets the resulting stderr
+        # StreamWriter.
+        _, stderr = await proc.communicate()
+        # Graphviz returns an exit code of 0 if it is successful; it returns a
+        # non-zero exit code if it is not successful.
+        if proc.returncode:
+            # When Graphviz returns an error exit code, then the image saving
+            # was unsuccessful.
+            raise GraphvizOutputError(stderr.decode())
+
+    except OSError as err:
+        if err.errno == errno.ENOENT:
+            # In this case, Graphviz has not been installed on the OS, so its
+            # executable applications are not available in the system shell.
+            raise GraphvizNotFoundError()
+        else:
+            # In this case, a strange and unexpected error from the OS
+            # occurred while running Graphviz DOT.
+            raise err
 
     # If Graphviz successfully rendered and saved the image file, then this
     # function will return None.
@@ -157,23 +170,11 @@ async def save_files_async(
         + output_file_extension
     )
 
-    try:
-        await exec_graphviz_async(
-            dot_command,
-            dot_source_file_path,
-            output_file_path,
-        )
-
-    except OSError as err:
-        if err.errno == errno.ENOENT:
-            # In this case, Graphviz has not been installed on the OS, so its
-            # executable applications are not available in the system shell.
-            raise GraphvizNotFoundError()
-        else:
-            # In this case, a strange and unexpected error from the OS
-            # occurred while running Graphviz DOT.
-            raise err
-
+    await exec_graphviz_async(
+        dot_command,
+        dot_source_file_path,
+        output_file_path,
+    )
 
 def save_files(
     dot_text,
