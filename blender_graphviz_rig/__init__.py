@@ -154,7 +154,7 @@ class ArmatureGraphvizAddonPreferences(bpy.types.AddonPreferences):
         )
         layout.label(
             text=(
-              'A “.png” file extension will also be automatically appended '
+              'A .png file extension will also be automatically appended '
               'to the filename.'
             ),
         )
