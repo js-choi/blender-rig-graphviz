@@ -228,6 +228,7 @@ Large rigs take a long time
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: docs/rig-rigify-human-thumbnail.png
+   :target: https://github.com/js-choi/blender-rig-graphviz/raw/main/docs/rig-rigify-human.png
 
 Large, complex rigs may require considerable time to analyze, and the resulting
 graph images may be large. Blender’s UI will be unresponsive during the
@@ -239,4 +240,4 @@ can see the complete image at `docs/rig-rigify-human.png`_.) It is thus
 recommended that only selected bones be rendered when working with very complex
 armatures.
 
-.. _docs/rig-rigify-human.png: docs/rig-rigify-human.png
+.. _docs/rig-rigify-human.png: https://github.com/js-choi/blender-rig-graphviz/raw/main/docs/rig-rigify-human.png
