@@ -5,9 +5,17 @@ This Blender add-on renders static graph images depicting the parent and
 constraint relationships between scene objects (and their bones). Output images
 are in PNG format. It requires that `Graphviz`_ be installed.
 
-.. image:: docs/screenshot-dolly-camera-rig.png
+.. image:: docs/screenshot-camera-dolly.png
 
 .. image:: docs/screenshot-rigify-hand.png
+
+.. image:: docs/rig-camera-crane.png
+
+.. image:: docs/rig-rigify-shark.png
+
+.. image:: docs/rig-rigify-quadruped-basic.png
+
+.. image:: docs/rig-rigify-human-basic.png
 
 .. image:: docs/rig-rigify-human-thumbnail.png
    :target: https://github.com/js-choi/blender-rig-graphviz/raw/main/docs/rig-rigify-human.png
