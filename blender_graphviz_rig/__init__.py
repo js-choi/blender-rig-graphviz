@@ -31,7 +31,7 @@ import bpy
 
 bl_info = {
     'name': 'Rig Graphviz',
-    'version': (1, 0, 0),
+    'version': (1, 0, 1),
     'blender': (3, 0, 0),
     'category': 'Rigging',
     'support': 'COMMUNITY',
