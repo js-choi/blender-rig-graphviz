@@ -25,7 +25,6 @@ from .savefiles import save_files, GraphvizNotFoundError, GraphvizOutputError
 
 from datetime import datetime
 import os
-import errno
 import sys
 
 import bpy
