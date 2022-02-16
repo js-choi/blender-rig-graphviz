@@ -9,6 +9,9 @@ are in PNG format. It requires that `Graphviz`_ be installed.
 
 .. image:: docs/screenshot-rigify-hand.png
 
+.. image:: docs/rig-rigify-human-thumbnail.png
+   :target: https://github.com/js-choi/blender-rig-graphviz/raw/main/docs/rig-rigify-human.png
+
 .. _Graphviz: https://www.graphviz.org/
 
 Installing Graphviz
@@ -37,10 +40,12 @@ use those: ``brew install graphviz`` or ``sudo port install graphviz``.
 (If you use Homebrew, you might have to `start Blender from the command line`_
 in order for the add-on to use Graphviz. This is because starting Blender from
 the Finder might make Blender add-ons unable to see your Homebrew-modified
-``PATH`` environment variable – without which the add-on cannot access the
-Graphviz application inside Homebrew’s ``/opt/homebrew/bin`` directory.
-Alternatively, `configure the add-on`_’s Graphviz DOT Command preference to
-directly point to the `dot` application, wherever it is installed.)
+PATH environment variable – without which the add-on cannot access the Graphviz
+application inside Homebrew’s ``/opt/homebrew/bin`` directory. Alternatively,
+`configure the add-on`_’s Graphviz DOT Command preference to directly point to
+the `dot` application, wherever it is installed.)
+
+.. _PATH environment variable: https://en.wikipedia.org/wiki/PATH_(variable)
 
 Graphviz on Linux
 ~~~~~~~~~~~~~~~~~
@@ -63,14 +68,14 @@ Installing the add-on itself
 ----------------------------
 
 1. `Install Graphviz`_ if you have not already done so.
-2. Go to the `Releases page`_ and download the most recently release’s
-   **blender_rig_graphviz.zip** asset. (Don’t open the ZIP file; just save it
-   as a ZIP file somewhere.)
+2. Go to the `Releases page`_ and download the most recent release’s
+   **blender_rig_graphviz.zip** asset. (Don’t open the ZIP file; just save
+   it as a ZIP file somewhere.)
 3. In Blender, open the Add-ons section in the Preferences window. (See also
    Blender’s documentation on `installing add-ons`_.)
 4. Click on the Install… button, and use the File Browser to select the
-   downloaded blender_rig_graphviz.zip file that you downloaded in Step 1. (You
-   can delete blender_rig_graphviz.zip now.)
+   downloaded blender_rig_graphviz.zip file that you downloaded in Step 1.
+   (You can delete the blender_rig_graphviz.zip file afterwards.)
 5. Check if the add-on works:
 
    1. Create and save a Blender file.
@@ -106,23 +111,24 @@ The add-on has several preferences.
 .. image:: docs/screenshot-preferences.png
 
 * **Graphviz DOT Command**: The shell command to run the Graphviz DOT
-  application.
+  application. If you get a
 
   In Windows, the default value is ``C:\Program Files\Graphviz\bin\dot.exe``
   (which is the default location used by the Graphviz  installer for Windows).
 
   In Linux, the default value is ``dot``. This assumes that the ``dot`` command
-  is available from one of the directories in the shell PATH variable.
+  is available from one of the directories in the system shell’s `PATH
+  environment variable`_.
 
   In macOS, the default value is ``dot``. This assumes that the ``dot`` command
-  is available from one of the directories in the shell PATH variable. (If you
-  use Homebrew on macOS, you might have to `start Blender from the command
-  line`_ in order for the add-on to use Graphviz. This is because starting
-  Blender from the Finder might make Blender add-ons unable to see your
-  Homebrew-modified ``PATH`` environment variable, without which the add-on
-  cannot access the Graphviz application inside Homebrew’s
-  ``/opt/homebrew/bin`` directory.) or manually set the Graphviz DOT Command
-  preference to the location of the DOT.
+  is available from one of the directories in the system shell’s `PATH
+  environment variable`_. (If you use Homebrew on macOS, you might have to
+  `start Blender from the command line`_ – or manually set the Graphviz DOT
+  Command preference to the location of the DOT – in order for the add-on to
+  use Graphviz. This is because starting Blender from the Finder might make
+  Blender add-ons unable to see your Homebrew-modified ``PATH`` environment
+  variable, without which the add-on cannot access the Graphviz application
+  inside Homebrew’s ``/opt/homebrew/bin`` directory.)
 
 * **Font Name**: A system font by this name must be visible to Graphviz. If
   this is blank, Graphviz will use an OS-dependent default font.
@@ -162,15 +168,19 @@ menu** in Pose Mode. This submenu has these operators:
   document’s introduction, except it uses the font that is configured in the
   add-on’s preferences.
 
-All of these operations will create a new PNG image file  with the name and
+All of these operations will create a new PNG image file with the name and
 location configured in the add-on’s preferences (or will overwrite any existing
 image file with the same name and location). A result message will appear in
 the `Status Bar`_ when the operation is finished.
+
+.. image:: docs/screenshot-success.png
 
 Whenever the add-on creates an image file, it will also load the image file
 into the current Blender file, so that you can view it in a Image Viewer, side
 by side with your rig in a 3D Viewport. It will automatically update each time
 you re-render a rig graph with the same filename.
+
+.. image:: docs/screenshot-rigify-hand.png
 
 (By default, the filename will be the active object’s name, and the directory
 will be the current Blender file’s directory. If your current Blender file is
@@ -179,6 +189,8 @@ is the default, then the add-on will show an error.)
 
 Image backup files
 ~~~~~~~~~~~~~~~~~~
+
+.. image:: docs/screenshot-backup-files.png
 
 In addition, if there was any existing image that the add-on overwrote with the
 new image, then the add-on also creates a backup image, named with consecutive
@@ -241,3 +253,69 @@ recommended that only selected bones be rendered when working with very complex
 armatures.
 
 .. _docs/rig-rigify-human.png: https://github.com/js-choi/blender-rig-graphviz/raw/main/docs/rig-rigify-human.png
+
+Error troubleshooting
+---------------------
+
+.. _preference: #configuring-the-add-on
+
+This Blender file has not yet been saved
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. image:: docs/screenshot-error-save-blender-file.png
+
+This error occurs when your Output Directory `preference`_ is set to ``//``
+(its default value), but you have not yet saved the Blender file. The ``//``
+indicates the current Blender file’s directory, but because the current Blender
+file has not yet been saved, it has no output directory.
+
+To fix this, simply save the Blender file into a directory. Alternatively, you
+can change the Output Directory to a specific directory.
+
+The Rig Graphviz add-on’s output directory path is is invalid
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. image:: docs/screenshot-error-invalid-directory-path.png
+
+This error occurs when your Output Directory `preference`_ is set to an invalid
+directory path. For example:
+
+* The output directory path might be blank.
+* The output directory path might not start with ``/`` in Linux and macOS.
+
+To fix this, change the output directory to something valid, like ``//`` for the
+current Blender file’s directory, or use the File Browser to choose a specific
+directory.
+
+Graphviz has not been installed or is not available from the system shell
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. image:: docs/screenshot-error-no-graphviz.png
+
+This error occurs when the add-on cannot find a Graphviz DOT application
+specified by the Graphviz DOT Command `preference`_.
+
+First, make sure that you have `installed Graphviz`_.
+
+Next, change your Graphviz DOT Command `preference`_ to point to your installed
+Graphviz DOT executable file:
+
+* In Windows, Graphviz installs the DOT executable file to ``C:\Program
+  Files\Graphviz\bin\dot.exe`` by default.
+* In Linux and macOS, the location of the DOT executable file depends on the
+  package manager you used to install Graphviz. Common locations include
+  ``/usr/local/bin/dot``, ``/usr/bin/dot``, ``/bin/dot``, and
+  ``/opt/homebrew/bin/dot``.
+
+(In Linux and macOS, the default value of the Graphviz DOT Command `preference`_
+is ``dot``. This assumes that the ``dot`` command is available from one of the
+directories in the system shell’s `PATH environment variable`_. In particular,
+if you use Homebrew on macOS, you might have to `start Blender from the command
+line`_ – or manually set the Graphviz DOT Command preference to the location of
+the DOT – in order for the add-on to use Graphviz. This is because starting
+Blender from the Finder might make Blender add-ons unable to see your
+Homebrew-modified PATH environment variable, without which the add-on cannot
+access the Graphviz application inside Homebrew’s ``/opt/homebrew/bin``
+directory.)
+
+.. _installed Graphviz: #installing-graphviz
