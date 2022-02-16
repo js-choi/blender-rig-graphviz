@@ -254,6 +254,20 @@ def run_rig_graphviz_operator(
         ))
         return {'CANCELLED'}
 
+    # If the resolved_output_directory_path is not an absolute path (e.g.,
+    # because the preferences_output_directory_path was blank '' or some other
+    # relative file path), then the OS may throw confusing permission errors,
+    # or – if Blender was opened from a command-line interface – it may
+    # confusingly save the file in the command-line interface’s working
+    # directory. We prevent this confusion with a special error.
+    if not os.path.isabs(resolved_output_directory_path):
+        self.report({'ERROR'}, (
+            'The Rig Graphviz add-on’s output directory path '
+            f'“{preferences_output_directory_path}” is invalid. '
+            'Change the output directory in the add-on’s preferences.'
+        ))
+        return {'CANCELLED'}
+
     dot_command = addon_preferences.dot_command
 
     output_fontname = addon_preferences.output_fontname
