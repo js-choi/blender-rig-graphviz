@@ -18,7 +18,7 @@ are in PNG format. It requires that `Graphviz`_ be installed.
 .. image:: docs/rig-rigify-human-basic.png
 
 .. image:: docs/rig-rigify-human-thumbnail.png
-   :target: https://github.com/js-choi/blender-rig-graphviz/raw/main/docs/rig-rigify-human.png
+   :target: https://github.com/js-choi/blender-rig-graphviz/raw/main/docs/rig-rigify-human-complete.png
 
 .. _Graphviz: https://www.graphviz.org/
 
@@ -248,7 +248,7 @@ Large rigs take a long time
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: docs/rig-rigify-human-thumbnail.png
-   :target: https://github.com/js-choi/blender-rig-graphviz/raw/main/docs/rig-rigify-human.png
+   :target: https://github.com/js-choi/blender-rig-graphviz/raw/main/docs/rig-rigify-human-complete.png
 
 Large, complex rigs may require considerable time to analyze, and the resulting
 graph images may be large. Blender’s UI will be unresponsive during the
@@ -256,11 +256,11 @@ analysis. For example, Rigify’s default human rig contains hundreds of bones
 and constraints. On a MacBook Air (M1, 2020), analysis and rendering of its rig
 graph may freeze Blender’s UI for as many as twenty seconds before it finishes,
 and it creates an approximately 20-MB PNG image (33,000 px × 18,000 px). (You
-can see the complete image at `docs/rig-rigify-human.png`_.) It is thus
+can see the complete image at `docs/rig-rigify-human-complete.png`_.) It is thus
 recommended that only selected bones be rendered when working with very complex
 armatures.
 
-.. _docs/rig-rigify-human.png: https://github.com/js-choi/blender-rig-graphviz/raw/main/docs/rig-rigify-human.png
+.. _docs/rig-rigify-human-complete.png: https://github.com/js-choi/blender-rig-graphviz/raw/main/docs/rig-rigify-human-complete.png
 
 Error troubleshooting
 ---------------------

@@ -770,12 +770,12 @@ def declare_parent_relation_edge(
     fresh_ids,
 ):
     """
-    If the given blender_struct has a parent (e.g., the parent Bone of a Bone
-    or the parent scene object of a scene object), and if both blender_struct
-    and its parent have corresponding nodes in the graph, then add an edge
-    between the two nodes. The edge will have no label, and it will have the
-    category 'parent'. The function returns the entity ID of the new edge, if
-    any, or None.
+    If the given blender_struct (i.e., a scene object, Bone, or vertex group)
+    has a parent (e.g., the parent Bone of a Bone or the parent scene object of
+    a scene object), and if both blender_struct and its parent have
+    corresponding nodes in the graph, then add an edge between the two nodes.
+    The edge will have no label, and it will have the category 'parent'. The
+    function returns the entity ID of the new edge, if any, or None.
 
     We draw an edge to a parent only if it already exists in the graph, in
     order to prevent that parent from recursively causing its own parent edges
@@ -789,41 +789,58 @@ def declare_parent_relation_edge(
         return
 
     parent_struct = getattr(blender_struct, 'parent', None)
-    parent_relationship_type = getattr(blender_struct, 'parent_type', None)
-    parent_bone_name = getattr(blender_struct, 'parent_bone', None)
 
-    parent_struct_type = getattr(parent_struct, 'type', None)
+    # The following variables are not None only when the blender_struct is a
+    # scene object, rather than a bone (or a vertex group).
+    object_parent_relationship_type = (
+        getattr(blender_struct, 'parent_type', None)
+    )
+    object_parent_bone_name = (
+        getattr(blender_struct, 'parent_bone', None)
+    )
+    object_parent_struct_type = getattr(parent_struct, 'type', None)
 
-    parent_relationship_targets_bone = (
-        parent_struct_type == 'ARMATURE'
-        and parent_relationship_type == 'BONE'
+    object_parent_relationship_targets_bone = (
+        object_parent_struct_type == 'ARMATURE'
+        and object_parent_relationship_type == 'BONE'
     )
 
-    # If the parent relationship is a Bone type rather than an Object type,
-    # then its destination is a specific bone.
-    parent_bone = (
-        parent_struct.data.bones[parent_bone_name]
-        if parent_relationship_targets_bone
+    # If the parent relationship is at the object level but targets a bone,
+    # rather than another object, then this is set to the destination Bone.
+    object_parent_bone = (
+        parent_struct.data.bones[object_parent_bone_name]
+        if object_parent_relationship_targets_bone
         else None
     )
 
-    parent_bone_node_id = (
-        struct_entity_id_dict.get(parent_bone, None)
-        if parent_bone is not None
+    object_parent_bone_node_id = (
+        struct_entity_id_dict.get(object_parent_bone, None)
+        if object_parent_bone is not None
         else None
     )
 
     # We draw an edge to a parent bone only if it already exists in the graph,
     # in order to prevent that bone from recursively causing its own parent
-    # edges to be added. If it does not already exist, then no edge node is
-    # created.
+    # edges to be added. If it does not already exist, then the parent object
+    # is used instead.
     parent_node_id = (
-        parent_bone_node_id
-        if parent_bone_node_id is not None
+        object_parent_bone_node_id
+        if object_parent_bone_node_id is not None
         else struct_entity_id_dict.get(parent_struct, None)
     )
 
     if parent_node_id is not None:
+        categories = (
+            # We also categorize the edge as 'connected' if the child
+            # structure’s use_connect property is True (which may occur only
+            # when the structure is a Bone).
+            ('parent', 'connected')
+            if getattr(blender_struct, 'use_connect', False)
+            # When the child structure is not a Bone or is not Connected, then
+            # we categorize the edge only as 'parent'.
+            else ('parent',)
+        )
+
         # Create an edge for the parent relation. (Parent relations do
         # not have keys, since there is no single Blender structure
         # corresponding to them, so declare_entity_id is not passed a key.)
@@ -834,7 +851,7 @@ def declare_parent_relation_edge(
             graph_data=graph_data,
             struct_entity_id_dict=struct_entity_id_dict,
             fresh_ids=fresh_ids,
-            categories=('parent',),
+            categories=categories,
         )
 
 
@@ -1107,7 +1124,7 @@ def create_legend_data():
         label='Legend',
     )
 
-    parent_node_id = declare_node(
+    disconnected_parent_node_id = declare_node(
         blender_struct=None,
         graph_data=graph_data,
         struct_entity_id_dict=struct_entity_id_dict,
@@ -1116,7 +1133,7 @@ def create_legend_data():
         label='Parent',
     )
 
-    child_node_id = declare_node(
+    disconnected_child_node_id = declare_node(
         blender_struct=None,
         graph_data=graph_data,
         struct_entity_id_dict=struct_entity_id_dict,
@@ -1127,12 +1144,40 @@ def create_legend_data():
 
     declare_edge(
         blender_struct=None,
-        origin_node_id=child_node_id,
-        destination_node_id=parent_node_id,
+        origin_node_id=disconnected_child_node_id,
+        destination_node_id=disconnected_parent_node_id,
         graph_data=graph_data,
         struct_entity_id_dict=struct_entity_id_dict,
         fresh_ids=fresh_ids,
         categories=('parent',),
+    )
+
+    connected_parent_node_id = declare_node(
+        blender_struct=None,
+        graph_data=graph_data,
+        struct_entity_id_dict=struct_entity_id_dict,
+        fresh_ids=fresh_ids,
+        cluster_id=cluster_id,
+        label='Parent',
+    )
+
+    connected_child_node_id = declare_node(
+        blender_struct=None,
+        graph_data=graph_data,
+        struct_entity_id_dict=struct_entity_id_dict,
+        fresh_ids=fresh_ids,
+        cluster_id=cluster_id,
+        label='Connected Child',
+    )
+
+    declare_edge(
+        blender_struct=None,
+        origin_node_id=connected_child_node_id,
+        destination_node_id=connected_parent_node_id,
+        graph_data=graph_data,
+        struct_entity_id_dict=struct_entity_id_dict,
+        fresh_ids=fresh_ids,
+        categories=('parent', 'connected'),
     )
 
     subject_node_id = declare_node(
