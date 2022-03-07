@@ -31,7 +31,7 @@ import bpy
 
 bl_info = {
     'name': 'Rig Graphviz',
-    'version': (1, 0, 1),
+    'version': (1, 1, 0),
     'blender': (3, 0, 0),
     'category': 'Rigging',
     'support': 'COMMUNITY',
@@ -174,6 +174,13 @@ dot_category_attrs_dict = {
     },
     'root': {
         'shape': 'circle',
+    },
+    'parent': {
+        'penwidth': '2.0',
+    },
+    'connected': {
+        'dir': 'both',
+        'arrowtail': 'dot',
     },
     'constraint': {
         'color': 'gray50',
